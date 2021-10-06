@@ -102,7 +102,7 @@ function xmldb_block_advnotifications_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2021010616, 'advnotifications');
     }
 
-    if ($oldversion < 2021092901) {
+    if ($oldversion < 2021100600) {
 
         // Define table block_advnotifications_coh to be created.
         $table = new xmldb_table('block_advnotifications_coh');
@@ -122,7 +122,7 @@ function xmldb_block_advnotifications_upgrade($oldversion) {
             $dbman->create_table($table);
         }
 
-                // Define table block_advnotifications_field to be created.
+        // Define table block_advnotifications_field to be created.
         $table = new xmldb_table('block_advnotifications_field');
 
         // Adding fields to table block_advnotifications_field.
@@ -159,8 +159,18 @@ function xmldb_block_advnotifications_upgrade($oldversion) {
             $dbman->create_table($table);
         }
 
+
+        // Define field id to be added to block_advnotifications.
+        $table = new xmldb_table('block_advnotifications');
+        $field = new xmldb_field('sendnotifications', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'aicon');
+
+        // Conditionally launch add field id.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
         // Advnotifications savepoint reached.
-        upgrade_block_savepoint(true, 2021092901, 'advnotifications');
+        upgrade_block_savepoint(true, 2021100600, 'advnotifications');
     }
 
     // Add future upgrade points here.
