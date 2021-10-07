@@ -189,7 +189,6 @@ if (isset($tableaction) && $tableaction != '') {
         $DB->update_record('block_advnotifications', $dnotification);
 
         $params = [
-            'context' => context_block::instance($blockinstance),
             'objectid' => $dnotification->id,
             'other' => [
                 'old_title' => $old->title,
@@ -198,6 +197,11 @@ if (isset($tableaction) && $tableaction != '') {
                 'old_date_to' => $old->date_to,
             ]
         ];
+        if ($blockinstance > 0) {
+            $params['context'] = context_block::instance($blockinstance);
+        } else {
+            $params['context'] = context_system::instance();
+        }
         $event = \block_advnotifications\event\notification_deleted::create($params);
         $event->trigger();
 
@@ -394,10 +398,12 @@ if ($purpose == "add") {
         \core\task\manager::queue_adhoc_task($task);
     }
 
-    $params = [
-        'context' => context_block::instance($blockinstance),
-        'objectid' => $id
-    ];
+    $params = ['objectid' => $id];
+    if ($blockinstance > 0) {
+        $params['context'] = context_block::instance($blockinstance);
+    } else {
+        $params['context'] = context_system::instance();
+    }
     $event = \block_advnotifications\event\notification_created::create($params);
     $event->trigger();
 
